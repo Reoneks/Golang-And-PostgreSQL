@@ -1,18 +1,32 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 
 	//"test/product"
 	"test/user"
 
+	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func main() {
-	dsn := "host=0.0.0.0 user=postgres password=postgres dbname=postgres-test port=5432 sslmode=disable"
+	connStr := "host=localhost user=postgres password=postgres dbname=postgres-test port=5432 sslmode=disable"
+	testdb, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	rows, _ := testdb.Query("SELECT * FROM users")
+	for rows.Next() {
+		var firstName user.UserDto
+		rows.Scan(&firstName.Id, &firstName.FirstName, &firstName.LastName, &firstName.Email, &firstName.Password)
+		fmt.Println(firstName)
+	}
+
+	dsn := "host=localhost user=postgres password=postgres dbname=postgres-test port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
@@ -22,13 +36,13 @@ func main() {
 	//productRepository := product.NewProductRepository(db)
 	userProductRepository := user.NewUserProductRepository(db)
 
-	userRepository.CreateUser(user.UserDto{
+	/*userRepository.CreateUser(user.UserDto{
 		Id:        1,
 		FirstName: "Test",
 		LastName:  "Some",
 		Email:     "a@a.a",
 		Password:  "none",
-	})
+	})*/
 
 	getUser, err := userRepository.GetUser(1)
 	if err != nil {
