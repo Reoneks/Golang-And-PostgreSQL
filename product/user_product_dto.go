@@ -1,4 +1,4 @@
-package user
+package product
 
 type UserProductDto struct {
 	UserID    int64 `gorm:"column:user_id"`

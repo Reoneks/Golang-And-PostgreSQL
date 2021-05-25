@@ -1,14 +1,14 @@
-package user
+package product
 
 import (
 	"log"
-	"test/product"
 
 	gm "gorm.io/gorm"
 )
 
 type UserProductRepository interface {
-	GetProductsByUserId(id int64) ([]*product.ProductDto, error)
+	GetProductsByUserId(id int64) ([]*ProductDto, error)
+	GetConnectionsByIds(user_id, product_id int64) (*UserProductDto, error)
 	CreateUserProductConnection(user UserProductDto) (*UserProductDto, error)
 }
 
@@ -16,18 +16,26 @@ type UserProductRepositoryImpl struct {
 	db *gm.DB
 }
 
-func (r *UserProductRepositoryImpl) GetProductsByUserId(id int64) (products []*product.ProductDto, err error) {
+func (r *UserProductRepositoryImpl) GetProductsByUserId(id int64) (products []*ProductDto, err error) {
 	var userProducts []*UserProductDto
 	if err = r.db.Where("user_id = ?", id).Find(&userProducts).Error; err != nil {
-		return nil, err
+		return
 	}
 	for _, user := range userProducts {
-		var productStruct *product.ProductDto
+		var productStruct *ProductDto
 		if err1 := r.db.Where("id = ?", user.ProductID).First(&productStruct).Error; err1 != nil {
 			log.Println(err1)
 			continue
 		}
 		products = append(products, productStruct)
+	}
+	return
+}
+
+func (r *UserProductRepositoryImpl) GetConnectionsByIds(user_id, product_id int64) (userProducts *UserProductDto, err error) {
+	if err = r.db.Where("user_id = ? AND product_id = ?", user_id, product_id).First(userProducts).Error; err != nil {
+		userProducts = nil
+		return
 	}
 	return
 }
