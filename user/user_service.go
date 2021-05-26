@@ -1,10 +1,9 @@
 package user
 
 import (
-	"crypto/sha256"
-	"encoding/base64"
 	"errors"
 	"strings"
+	"test/utils"
 )
 
 type UserService interface {
@@ -23,18 +22,8 @@ func (s *UserServiceImpl) GetUser(userId int64) (*UserDto, error) {
 	return s.userRepository.GetUser(userId)
 }
 
-func encrypt(password string) (string, error) {
-	h := sha256.New()
-	_, err := h.Write([]byte(password))
-	if err != nil {
-		return "", err
-	}
-	sha := base64.URLEncoding.EncodeToString(h.Sum(nil))
-	return sha, nil
-}
-
 func (s *UserServiceImpl) Registration(user UserDto) (*UserDto, error) {
-	password, err := encrypt(user.Password)
+	password, err := utils.Encrypt(user.Password)
 	user.Password = password
 	if err != nil {
 		return nil, err

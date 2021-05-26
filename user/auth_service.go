@@ -1,7 +1,7 @@
 package user
 
 import (
-	"errors"
+	"test/utils"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -19,23 +19,12 @@ type AuthServiceImpl struct {
 	userService UserService
 }
 
-func compare(user UserDto, password string) error {
-	userPassword, err := encrypt(password)
-	if err != nil {
-		return err
-	}
-	if user.Password != userPassword {
-		return errors.New("entered the wrong password")
-	}
-	return nil
-}
-
 func (s *AuthServiceImpl) Login(username, password string) (*Login, error) {
 	user, err := s.userService.GetUserByUsername(username)
 	if err != nil {
 		return nil, err
 	}
-	err = compare(*user, password)
+	err = utils.Compare(user.Password, password)
 	if err != nil {
 		return nil, err
 	}
