@@ -9,11 +9,17 @@ import (
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	. "test/config"
 )
 
 func main() {
-	dsn := "host=localhost user=postgres password=postgres dbname=postgres-test port=5432 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	_ = godotenv.Load()
+
+	config := NewConfig()
+
+	db := config.DBClient()
+	jwt := config.JWT()
+
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -29,7 +35,7 @@ func main() {
 		log.Println(err)
 	}
 
-	authService := user.NewAuthService(userService)
+	authService := user.NewAuthService(userService, jwt)
 	login, err := authService.Login("Last Last", "Last")
 	if err != nil {
 		log.Println(err)

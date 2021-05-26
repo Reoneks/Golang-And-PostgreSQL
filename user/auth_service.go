@@ -16,6 +16,7 @@ type AuthService interface {
 }
 
 type AuthServiceImpl struct {
+	jwt         *jwtauth.JWTAuth
 	userService UserService
 }
 
@@ -41,8 +42,9 @@ func (s *AuthServiceImpl) Login(username, password string) (*Login, error) {
 	}, nil
 }
 
-func NewAuthService(userService UserService) AuthService {
+func NewAuthService(userService UserService, jwt *jwtauth.JWTAuth) AuthService {
 	return &AuthServiceImpl{
+		jwt,
 		userService,
 	}
 }
