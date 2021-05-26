@@ -5,8 +5,10 @@ go 1.16
 require (
 	contrib.go.opencensus.io/exporter/stackdriver v0.6.0 // indirect
 	git.apache.org/thrift.git v0.0.0-20180924222215-a9235805469b // indirect
+	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/cznic/ql v1.2.0 // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/go-chi/jwtauth v1.2.0
 	github.com/go-ini/ini v1.39.0 // indirect
 	github.com/golang-migrate/migrate/v4 v4.14.1 // indirect
 	github.com/golang/lint v0.0.0-20180702182130-06c8688daad7 // indirect
@@ -15,6 +17,7 @@ require (
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
 	github.com/jackc/pgx v3.2.0+incompatible // indirect
+	github.com/jinzhu/gorm v1.9.16
 	github.com/kshvakov/clickhouse v1.3.4 // indirect
 	github.com/lib/pq v1.10.2 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect

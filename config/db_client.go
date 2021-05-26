@@ -2,8 +2,8 @@ package config
 
 import (
 	"github.com/caarlos0/env"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type DBConfig struct {

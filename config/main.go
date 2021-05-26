@@ -1,7 +1,8 @@
 package config
 
 import (
-	"github.com/jinzhu/gorm"
+	"github.com/go-chi/jwtauth"
+	"gorm.io/gorm"
 	"sync"
 )
 

@@ -1,14 +1,16 @@
 package user
 
 import (
+	"github.com/go-chi/jwtauth"
 	"test/utils"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
 type Login struct {
-	Token string   `json:"token"`
-	User  *UserDto `json:"user"`
+	Token string `json:"token"`
+	// TODO: Use User instead UserDto
+	User *UserDto `json:"user"`
 }
 
 type AuthService interface {
