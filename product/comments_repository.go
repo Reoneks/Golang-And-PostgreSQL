@@ -33,6 +33,11 @@ func (r *CommentsRepositoryImpl) CreateComment(comment CommentsDto) (*CommentsDt
 }
 
 func (r *CommentsRepositoryImpl) UpdateComment(comment CommentsDto) (*CommentsDto, error) {
+	var comments *CommentsDto
+	if err := r.db.Where("id = ?", comment.Id).First(&comments).Error; err != nil {
+		return nil, err
+	}
+	comment.CreatedAt = comments.CreatedAt
 	comment.UpdatedAt = time.Now()
 	if err := r.db.Save(&comment).Error; err != nil {
 		return nil, err

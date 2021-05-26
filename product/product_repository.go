@@ -47,6 +47,11 @@ func (r *ProductRepositoryImpl) CreateProduct(product ProductDto) (*ProductDto, 
 }
 
 func (r *ProductRepositoryImpl) UpdateProduct(product ProductDto) (*ProductDto, error) {
+	result, _, err := r.GetProduct(product.Id)
+	if err != nil {
+		return nil, err
+	}
+	product.CreatedAt = result.CreatedAt
 	product.UpdatedAt = time.Now()
 	if err := r.db.Save(&product).Error; err != nil {
 		return nil, err

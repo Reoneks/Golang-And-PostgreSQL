@@ -8,7 +8,6 @@ import (
 
 type UserProductRepository interface {
 	GetProductsByUserId(id int64) ([]*ProductDto, error)
-	GetConnectionsByIds(user_id, product_id int64) (*UserProductDto, error)
 	CreateUserProductConnection(user UserProductDto) (*UserProductDto, error)
 }
 
@@ -28,14 +27,6 @@ func (r *UserProductRepositoryImpl) GetProductsByUserId(id int64) (products []*P
 			continue
 		}
 		products = append(products, productStruct)
-	}
-	return
-}
-
-func (r *UserProductRepositoryImpl) GetConnectionsByIds(user_id, product_id int64) (userProducts *UserProductDto, err error) {
-	if err = r.db.Where("user_id = ? AND product_id = ?", user_id, product_id).First(userProducts).Error; err != nil {
-		userProducts = nil
-		return
 	}
 	return
 }

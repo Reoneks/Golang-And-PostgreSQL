@@ -40,34 +40,31 @@ func (s *ProductServiceImpl) CreateProduct(product ProductDto) (*ProductDto, err
 }
 
 func (s *ProductServiceImpl) DeleteProduct(product_id, userId int64) error {
-	result, err := s.uPRepository.GetConnectionsByIds(product_id, userId)
+	result, _, err := s.GetProduct(product_id)
 	if err != nil {
 		return err
-	}
-	if result == nil {
+	} else if result.CreatedBy != userId {
 		return errors.New("you are not allowed to do it")
 	}
 	return s.productRepository.DeleteProduct(product_id)
 }
 
 func (s *ProductServiceImpl) UpdateProduct(product ProductDto, userId int64) (*ProductDto, error) {
-	result, err := s.uPRepository.GetConnectionsByIds(product.Id, userId)
+	result, _, err := s.GetProduct(product.Id)
 	if err != nil {
 		return nil, err
-	}
-	if result == nil {
+	} else if result.CreatedBy != userId {
 		return nil, errors.New("you are not allowed to do it")
 	}
 	return s.productRepository.UpdateProduct(product)
 }
 
 func (s *ProductServiceImpl) AddUsers(productId, userId int64, users []int64) (errorsArray []error) {
-	result, err := s.uPRepository.GetConnectionsByIds(productId, userId)
+	result, _, err := s.GetProduct(productId)
 	if err != nil {
 		errorsArray = append(errorsArray, err)
 		return
-	}
-	if result == nil {
+	} else if result.CreatedBy != userId {
 		errorsArray = append(errorsArray, errors.New("you are not allowed to do it"))
 		return
 	}
