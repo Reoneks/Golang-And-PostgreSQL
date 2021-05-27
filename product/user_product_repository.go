@@ -7,7 +7,7 @@ import (
 )
 
 type UserProductRepository interface {
-	GetProductsByUserId(id int64) ([]*ProductDto, error)
+	GetProductsByUserId(id int64) ([]ProductDto, error)
 	CreateUserProductConnection(user UserProductDto) (*UserProductDto, error)
 }
 
@@ -15,8 +15,8 @@ type UserProductRepositoryImpl struct {
 	db *gm.DB
 }
 
-func (r *UserProductRepositoryImpl) GetProductsByUserId(id int64) (products []*ProductDto, err error) {
-	var userProducts []*UserProductDto
+func (r *UserProductRepositoryImpl) GetProductsByUserId(id int64) (products []ProductDto, err error) {
+	var userProducts []UserProductDto
 	if err = r.db.Where("user_id = ?", id).Find(&userProducts).Error; err != nil {
 		return
 	}
@@ -26,7 +26,7 @@ func (r *UserProductRepositoryImpl) GetProductsByUserId(id int64) (products []*P
 			log.Println(err1)
 			continue
 		}
-		products = append(products, productStruct)
+		products = append(products, *productStruct)
 	}
 	return
 }

@@ -1,12 +1,18 @@
 package api
 
 import (
+	"net/http"
 	"net/url"
-	"test/api/handlers/auth"
-	"test/api/http"
+
+	"test/api/handlers/auth_handler"
+	"test/api/handlers/product_handler"
+	"test/api/handlers/user_handler"
+	"test/auth"
 	"test/product"
 	"test/user"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 type HTTPServer interface {
@@ -15,14 +21,14 @@ type HTTPServer interface {
 
 type httpServer struct {
 	url            *url.URL
-	authService    user.AuthService
+	authService    auth.AuthService
 	userService    user.UserService
 	productService product.ProductService
 }
 
 func NewHTTPServer(
 	url *url.URL,
-	authService user.AuthService,
+	authService auth.AuthService,
 	userService user.UserService,
 	productService product.ProductService,
 ) HTTPServer {
@@ -36,25 +42,31 @@ func NewHTTPServer(
 
 func (s *httpServer) Start() error {
 	router := gin.Default()
-	//router.Use(apihttp.CorsMiddleware())
+	//FIXME: router.Use(apihttp.CorsMiddleware())
 
 	private := router.Group("/")
-	private.Use(apihttp.AuthMiddleware(s.authEndpoint))
-	{
-		private.POST("/login", auth.LoginHandler(s.authService))
+	//FIXME: private.Use(){}
 
-		//	private.Any("/ws", apihttp.WSHandler(s.upgrader, s.connector))
-		//
-		//	private.GET("/rooms", s.roomController.GetRooms)
-		//	private.POST("/rooms", s.roomController.Create)
-		//	private.PUT("/rooms/:id", s.roomController.Update)
-		//	private.DELETE("/rooms/:id", s.roomController.Delete)
-		//	private.POST("/rooms/:id/users", s.roomController.AssignUsers)
-		//	private.DELETE("/rooms/:id/users", s.roomController.DeleteUsers)
-		//
-		//	private.GET("/rooms/:id/messages", s.messageController.GetMessages)
-		//	private.POST("/rooms/:id/messages/files", s.messageController.Upload)
-	}
+	//^ Auth Handlers
+	private.POST("/login", auth_handler.LoginHandler(s.authService))
+
+	//^ User Handlers
+	private.GET("/get_user", user_handler.GetUserHandler(s.userService))
+	private.GET("/get_user_by_email", user_handler.GetUserByEmailHandler(s.userService))
+	private.GET("/get_users", user_handler.GetUsersHandler(s.userService))
+	private.POST("/registration", user_handler.RegistrationHandler(s.userService))
+	private.POST("/delete_user", user_handler.DeleteUserHandler(s.userService))
+
+	//^ Product Handlers
+	private.GET("/get_product", product_handler.GetProductHandler(s.productService))
+	private.GET("/get_products", product_handler.GetProductsHandler(s.productService))
+	private.POST("/create_product", product_handler.CreateProductHandler(s.productService))
+	private.POST("/delete_product", product_handler.DeleteProductHandler(s.productService))
+	private.POST("/update_product", product_handler.UpdateProductHandler(s.productService))
+	private.POST("/add_users", product_handler.AddUsersHandler(s.productService))
+	private.POST("/add_comment", product_handler.AddCommentHandler(s.productService))
+	private.POST("/update_comment", product_handler.UpdateCommentHandler(s.productService))
+	private.POST("/delete_comment", product_handler.DeleteCommentHandler(s.productService))
 
 	server := &http.Server{
 		Addr:           s.url.Host,

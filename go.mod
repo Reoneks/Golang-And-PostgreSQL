@@ -3,27 +3,27 @@ module test
 go 1.16
 
 require (
-	contrib.go.opencensus.io/exporter/stackdriver v0.6.0 // indirect
-	git.apache.org/thrift.git v0.0.0-20180924222215-a9235805469b // indirect
 	github.com/caarlos0/env v3.5.0+incompatible
-	github.com/cznic/ql v1.2.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/gin-gonic/gin v1.7.2 // indirect
 	github.com/go-chi/jwtauth v1.2.0
-	github.com/go-ini/ini v1.39.0 // indirect
-	github.com/golang-migrate/migrate/v4 v4.14.1 // indirect
-	github.com/golang/lint v0.0.0-20180702182130-06c8688daad7 // indirect
-	github.com/googleapis/gax-go v2.0.0+incompatible // indirect
-	github.com/gotestyourself/gotestyourself v2.1.0+incompatible // indirect
-	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
+	github.com/go-playground/validator v9.31.0+incompatible // indirect
+	github.com/go-playground/validator/v10 v10.6.1 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
-	github.com/jackc/pgx v3.2.0+incompatible // indirect
-	github.com/jinzhu/gorm v1.9.16
-	github.com/kshvakov/clickhouse v1.3.4 // indirect
-	github.com/lib/pq v1.10.2 // indirect
-	github.com/stretchr/testify v1.7.0 // indirect
+	github.com/joho/godotenv v1.3.0 // indirect
+	github.com/json-iterator/go v1.1.11 // indirect
+	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/lib/pq v1.10.2
+	github.com/mattn/go-isatty v0.0.13 // indirect
+	github.com/stretchr/testify v1.7.0
+	github.com/ugorji/go v1.2.6 // indirect
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
+	golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea // indirect
 	golang.org/x/text v0.3.6 // indirect
-	gopkg.in/ini.v1 v1.39.0 // indirect
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	gopkg.in/go-playground/validator.v9 v9.29.1 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/postgres v1.1.0
 	gorm.io/gorm v1.21.10
 )

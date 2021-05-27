@@ -1,4 +1,4 @@
-package user_test
+package test
 
 import (
 	"strconv"
@@ -11,7 +11,7 @@ import (
 )
 
 var db *gorm.DB
-var userService user.UserService
+var userRepository user.UserRepository
 
 func init() {
 	var err error
@@ -20,17 +20,16 @@ func init() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	userRepository := user.NewUserRepository(db)
-	userService = user.NewUserService(userRepository)
+	userRepository = user.NewUserRepository(db)
 }
 
-func TestRegistration(t *testing.T) {
+func TestCreateUser(t *testing.T) {
 	for i := int64(1); i < 6; i++ {
-		result, err := userService.Registration(user.UserDto{
+		result, err := userRepository.CreateUser(user.UserDto{
 			Id:        i + 2,
 			FirstName: "User" + strconv.FormatInt(i, 10),
 			LastName:  "Last" + strconv.FormatInt(i, 10),
-			Email:     "Sasha_Rogahn@hotmail.com",
+			Email:     "Sasha_Rogahn" + strconv.FormatInt(i, 10) + "@hotmail.com",
 			Password:  "uRVxm4UK61Xh4dG",
 		})
 		if err != nil {
@@ -41,14 +40,14 @@ func TestRegistration(t *testing.T) {
 			Id:        i + 2,
 			FirstName: "User" + strconv.FormatInt(i, 10),
 			LastName:  "Last" + strconv.FormatInt(i, 10),
-			Email:     "Sasha_Rogahn@hotmail.com",
+			Email:     "Sasha_Rogahn" + strconv.FormatInt(i, 10) + "@hotmail.com",
 			Password:  result.Password,
 		}, *result)
 	}
 }
 func TestGetUser(t *testing.T) {
 	for i := int64(1); i < 6; i++ {
-		result, err := userService.GetUser(i + 2)
+		result, err := userRepository.GetUser(i + 2)
 		if err != nil {
 			t.Error(err)
 			continue
@@ -57,29 +56,14 @@ func TestGetUser(t *testing.T) {
 			Id:        i + 2,
 			FirstName: "User" + strconv.FormatInt(i, 10),
 			LastName:  "Last" + strconv.FormatInt(i, 10),
-			Email:     "Sasha_Rogahn@hotmail.com",
+			Email:     "Sasha_Rogahn" + strconv.FormatInt(i, 10) + "@hotmail.com",
 			Password:  result.Password,
 		}, *result)
 	}
 }
-func TestGetUserByUsername(t *testing.T) {
-	for i := int64(1); i < 6; i++ {
-		result, err := userService.GetUserByUsername("User" + strconv.FormatInt(i, 10) + " " + "Last" + strconv.FormatInt(i, 10))
-		if err != nil {
-			t.Error(err)
-			continue
-		}
-		assert.Equal(t, user.UserDto{
-			Id:        i + 2,
-			FirstName: "User" + strconv.FormatInt(i, 10),
-			LastName:  "Last" + strconv.FormatInt(i, 10),
-			Email:     "Sasha_Rogahn@hotmail.com",
-			Password:  result.Password,
-		}, *result)
-	}
-}
+
 func TestGetUsers(t *testing.T) {
-	result, err := userService.GetUsers("email:hotmail.com")
+	result, err := userRepository.GetUsers("email LIKE '%hotmail%'")
 	if err != nil {
 		t.Error(err)
 	} else {
@@ -88,16 +72,39 @@ func TestGetUsers(t *testing.T) {
 				Id:        int64(i) + 3,
 				FirstName: "User" + strconv.FormatInt(int64(i)+1, 10),
 				LastName:  "Last" + strconv.FormatInt(int64(i)+1, 10),
-				Email:     "Sasha_Rogahn@hotmail.com",
+				Email:     "Sasha_Rogahn" + strconv.FormatInt(int64(i)+1, 10) + "@hotmail.com",
 				Password:  userInResult.Password,
-			}, *userInResult)
+			}, userInResult)
 		}
+	}
+}
+
+func TestUpdateUser(t *testing.T) {
+	for i := int64(1); i < 6; i++ {
+		result, err := userRepository.UpdateUser(user.UserDto{
+			Id:        i + 2,
+			FirstName: "User" + strconv.FormatInt(i, 10),
+			LastName:  "Last" + strconv.FormatInt(i, 10),
+			Email:     "Sasha_Rogahn" + strconv.FormatInt(i+1, 10) + "@hotmail.com",
+			Password:  "uRVxm4UK61Xh4dG",
+		})
+		if err != nil {
+			t.Error(err)
+			continue
+		}
+		assert.Equal(t, user.UserDto{
+			Id:        i + 2,
+			FirstName: "User" + strconv.FormatInt(i, 10),
+			LastName:  "Last" + strconv.FormatInt(i, 10),
+			Email:     "Sasha_Rogahn" + strconv.FormatInt(i+1, 10) + "@hotmail.com",
+			Password:  result.Password,
+		}, *result)
 	}
 }
 
 func TestDeleteUser(t *testing.T) {
 	for i := int64(1); i < 6; i++ {
-		err := userService.DeleteUser(i + 2)
+		err := userRepository.DeleteUser(i + 2)
 		if err != nil {
 			t.Error(err)
 		}

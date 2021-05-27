@@ -6,14 +6,14 @@ import (
 )
 
 type ProductService interface {
-	GetProduct(id int64) (*ProductDto, []*CommentsDto, error)
-	GetProducts(search string) ([]*ProductDto, error)
-	CreateProduct(product ProductDto) (*ProductDto, error)
+	GetProduct(id int64) (*Product, []Comments, error)
+	GetProducts(search string) ([]Product, error)
+	CreateProduct(product ProductDto) (*Product, error)
 	DeleteProduct(product_id, userId int64) error
-	UpdateProduct(product ProductDto, userId int64) (*ProductDto, error)
+	UpdateProduct(product ProductDto, userId int64) (*Product, error)
 	AddUsers(productId, userId int64, users []int64) (errorsArray []error)
-	AddComment(comment CommentsDto) (*CommentsDto, error)
-	UpdateComment(comment CommentsDto) (*CommentsDto, error)
+	AddComment(comment CommentsDto) (*Comments, error)
+	UpdateComment(comment CommentsDto) (*Comments, error)
 	DeleteComment(commentId int64) error
 }
 
@@ -23,20 +23,41 @@ type ProductServiceImpl struct {
 	commentsRepository CommentsRepository
 }
 
-func (s *ProductServiceImpl) GetProduct(id int64) (*ProductDto, []*CommentsDto, error) {
-	return s.productRepository.GetProduct(id)
+func (s *ProductServiceImpl) GetProduct(id int64) (*Product, []Comments, error) {
+	result, comments, err := s.productRepository.GetProduct(id)
+	if err != nil {
+		return nil, nil, err
+	}
+	resultProduct := FromProductDto(*result)
+	resultComments := FromCommentsDtos(comments)
+	return &resultProduct, resultComments, nil
 }
 
-func (s *ProductServiceImpl) GetProducts(search string) ([]*ProductDto, error) {
+func (s *ProductServiceImpl) GetProducts(search string) ([]Product, error) {
 	params := strings.Split(search, ":")
 	if len(params) == 2 {
-		return s.productRepository.GetProducts(params[0] + " LIKE '%" + params[1] + "%'")
+		result, err := s.productRepository.GetProducts(params[0] + " LIKE '%" + params[1] + "%'")
+		if err != nil {
+			return nil, err
+		}
+		resultProducts := FromProductDtos(result)
+		return resultProducts, nil
 	}
-	return s.productRepository.GetProducts("")
+	result, err := s.productRepository.GetProducts("")
+	if err != nil {
+		return nil, err
+	}
+	resultProducts := FromProductDtos(result)
+	return resultProducts, nil
 }
 
-func (s *ProductServiceImpl) CreateProduct(product ProductDto) (*ProductDto, error) {
-	return s.productRepository.CreateProduct(product)
+func (s *ProductServiceImpl) CreateProduct(product ProductDto) (*Product, error) {
+	result, err := s.productRepository.CreateProduct(product)
+	if err != nil {
+		return nil, err
+	}
+	resultComments := FromProductDto(*result)
+	return &resultComments, nil
 }
 
 func (s *ProductServiceImpl) DeleteProduct(product_id, userId int64) error {
@@ -49,14 +70,19 @@ func (s *ProductServiceImpl) DeleteProduct(product_id, userId int64) error {
 	return s.productRepository.DeleteProduct(product_id)
 }
 
-func (s *ProductServiceImpl) UpdateProduct(product ProductDto, userId int64) (*ProductDto, error) {
+func (s *ProductServiceImpl) UpdateProduct(product ProductDto, userId int64) (*Product, error) {
 	result, _, err := s.GetProduct(product.Id)
 	if err != nil {
 		return nil, err
 	} else if result.CreatedBy != userId {
 		return nil, errors.New("you are not allowed to do it")
 	}
-	return s.productRepository.UpdateProduct(product)
+	updateResult, err := s.productRepository.UpdateProduct(product)
+	if err != nil {
+		return nil, err
+	}
+	resultProduct := FromProductDto(*updateResult)
+	return &resultProduct, nil
 }
 
 func (s *ProductServiceImpl) AddUsers(productId, userId int64, users []int64) (errorsArray []error) {
@@ -80,12 +106,22 @@ func (s *ProductServiceImpl) AddUsers(productId, userId int64, users []int64) (e
 	return
 }
 
-func (s *ProductServiceImpl) AddComment(comment CommentsDto) (*CommentsDto, error) {
-	return s.commentsRepository.CreateComment(comment)
+func (s *ProductServiceImpl) AddComment(comment CommentsDto) (*Comments, error) {
+	result, err := s.commentsRepository.CreateComment(comment)
+	if err != nil {
+		return nil, err
+	}
+	resultComments := FromCommentsDto(*result)
+	return &resultComments, nil
 }
 
-func (s *ProductServiceImpl) UpdateComment(comment CommentsDto) (*CommentsDto, error) {
-	return s.commentsRepository.UpdateComment(comment)
+func (s *ProductServiceImpl) UpdateComment(comment CommentsDto) (*Comments, error) {
+	result, err := s.commentsRepository.UpdateComment(comment)
+	if err != nil {
+		return nil, err
+	}
+	resultComments := FromCommentsDto(*result)
+	return &resultComments, nil
 }
 
 func (s *ProductServiceImpl) DeleteComment(commentId int64) error {

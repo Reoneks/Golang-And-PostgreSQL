@@ -2,12 +2,12 @@ package config
 
 import (
 	"github.com/caarlos0/env"
-	_ "gorm.io/driver/postgres"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type DBConfig struct {
-	DbUrl string `env:"DB_URL"`
+	DNS string `env:"DNS"`
 }
 
 func (c *ConfigImpl) DBClient() *gorm.DB {
@@ -23,7 +23,7 @@ func (c *ConfigImpl) DBClient() *gorm.DB {
 		panic(err)
 	}
 
-	client, err := gorm.Open("postgres", dbConfig.DbUrl)
+	client, err := gorm.Open(postgres.Open(dbConfig.DNS), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}

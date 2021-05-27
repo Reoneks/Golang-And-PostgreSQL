@@ -3,17 +3,22 @@ package main
 import (
 	"log"
 	"test/api"
+	"test/auth"
 	"test/product"
 	"test/user"
 
+	c "test/config"
+
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	. "test/config"
 )
 
 func main() {
-	_ = godotenv.Load()
+	if err := godotenv.Load(".env.example"); err != nil {
+		log.Print("No .env file found")
+	}
 
-	config := NewConfig()
+	config := c.NewConfig()
 
 	db := config.DBClient()
 	jwt := config.JWT()
@@ -25,7 +30,7 @@ func main() {
 
 	userService := user.NewUserService(userRepository)
 	productService := product.NewProductService(productRepository, uPRepository, commentsRepository)
-	authService := user.NewAuthService(userService, jwt)
+	authService := auth.NewAuthService(userService, jwt)
 
 	httpServer := api.NewHTTPServer(
 		config.ServerAddress(),
@@ -34,10 +39,9 @@ func main() {
 		productService,
 	)
 
-	///  Addr http://0.0.0.0:8080
-	log.Printf("HTTP Server listening at: %v", config.Addr)
+	log.Printf("HTTP Server listening at: %v", config.ServerAddress().String())
 
-	if err = httpServer.Start(); err != nil {
+	if err := httpServer.Start(); err != nil {
 		panic(err)
 	}
 

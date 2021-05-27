@@ -1,14 +1,17 @@
 package config
 
 import (
+	"net/url"
+	"sync"
+
 	"github.com/go-chi/jwtauth"
 	"gorm.io/gorm"
-	"sync"
 )
 
 type Config interface {
 	DBClient() *gorm.DB
 	JWT() *jwtauth.JWTAuth
+	ServerAddress() *url.URL
 }
 
 type ConfigImpl struct {
@@ -17,6 +20,7 @@ type ConfigImpl struct {
 	//internal objects
 	dbClient *gorm.DB
 	jwt      *jwtauth.JWTAuth
+	url      *url.URL
 }
 
 func NewConfig() Config {

@@ -9,7 +9,7 @@ type UserRepository interface {
 	CreateUser(user UserDto) (*UserDto, error)
 	UpdateUser(user UserDto) (*UserDto, error)
 	DeleteUser(id int64) error
-	GetUsers(where string) ([]*UserDto, error)
+	GetUsers(where string) ([]UserDto, error)
 }
 
 type UserRepositoryImpl struct {
@@ -52,7 +52,7 @@ func (r *UserRepositoryImpl) DeleteUser(id int64) error {
 	return nil
 }
 
-func (r *UserRepositoryImpl) GetUsers(where string) (users []*UserDto, err error) {
+func (r *UserRepositoryImpl) GetUsers(where string) (users []UserDto, err error) {
 	var findResult *gm.DB = r.db
 	if where != "" {
 		findResult = findResult.Where(where)

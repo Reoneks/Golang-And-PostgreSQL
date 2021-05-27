@@ -7,20 +7,20 @@ import (
 )
 
 type ProductRepository interface {
-	GetProduct(id int64) (*ProductDto, []*CommentsDto, error)
+	GetProduct(id int64) (*ProductDto, []CommentsDto, error)
 	CreateProduct(user ProductDto) (*ProductDto, error)
 	UpdateProduct(user ProductDto) (*ProductDto, error)
 	DeleteProduct(id int64) error
-	GetProducts(where string) ([]*ProductDto, error)
+	GetProducts(where string) ([]ProductDto, error)
 }
 
 type ProductRepositoryImpl struct {
 	db *gm.DB
 }
 
-func (r *ProductRepositoryImpl) GetProduct(id int64) (*ProductDto, []*CommentsDto, error) {
+func (r *ProductRepositoryImpl) GetProduct(id int64) (*ProductDto, []CommentsDto, error) {
 	product := &ProductDto{}
-	comments := []*CommentsDto{}
+	comments := []CommentsDto{}
 	if err := r.db.Where("id = ?", id).First(product).Error; err != nil {
 		return nil, nil, err
 	}
@@ -66,7 +66,7 @@ func (r *ProductRepositoryImpl) DeleteProduct(id int64) error {
 	return nil
 }
 
-func (r *ProductRepositoryImpl) GetProducts(where string) (products []*ProductDto, err error) {
+func (r *ProductRepositoryImpl) GetProducts(where string) (products []ProductDto, err error) {
 	var findResult *gm.DB = r.db
 	if where != "" {
 		findResult = findResult.Where(where)
