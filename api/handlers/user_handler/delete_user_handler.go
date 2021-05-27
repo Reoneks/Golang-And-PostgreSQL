@@ -8,7 +8,7 @@ import (
 )
 
 type DeleteUserRequest struct {
-	UserId int64 `json:"id"`
+	UserId int64 `json:"user_id"`
 }
 
 func DeleteUserHandler(userService user.UserService) func(ctx *gin.Context) {
