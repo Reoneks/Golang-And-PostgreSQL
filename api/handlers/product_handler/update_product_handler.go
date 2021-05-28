@@ -8,8 +8,8 @@ import (
 )
 
 type UpdateProductRequest struct {
-	ProductInfo product.ProductDto `json:"product_info"`
-	UserId      int64              `json:"user_id"`
+	ProductInfo product.Product `json:"product_info"`
+	UserId      int64           `json:"user_id"`
 }
 
 func UpdateProductHandler(productService product.ProductService) func(ctx *gin.Context) {
@@ -20,7 +20,10 @@ func UpdateProductHandler(productService product.ProductService) func(ctx *gin.C
 			return
 		}
 
-		product, err := productService.UpdateProduct(updateProductRequest.ProductInfo, updateProductRequest.UserId)
+		product, err := productService.UpdateProduct(
+			product.ToProductDto(updateProductRequest.ProductInfo),
+			updateProductRequest.UserId,
+		)
 		if err != nil {
 			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": err.Error(),

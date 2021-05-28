@@ -25,7 +25,7 @@ func DeleteCommentHandler(productService product.ProductService) func(ctx *gin.C
 				"error": err.Error(),
 			})
 		} else {
-			ctx.JSON(http.StatusOK, "The product was deleted successfully")
+			ctx.JSON(http.StatusOK, "The comment was deleted successfully")
 		}
 	}
 }
