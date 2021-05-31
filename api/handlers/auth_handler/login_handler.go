@@ -18,7 +18,6 @@ func LoginHandler(authService auth.AuthService) func(ctx *gin.Context) {
 		var loginRequest LoginRequest
 		if err := ctx.BindJSON(&loginRequest); err != nil {
 			ctx.JSON(http.StatusBadRequest, err)
-			//FIXME: ctx.Abort()
 			return
 		}
 
@@ -32,7 +31,7 @@ func LoginHandler(authService auth.AuthService) func(ctx *gin.Context) {
 
 		login, err := authService.Login(loginRequest.Email, loginRequest.Password)
 		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{
+			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
 		} else if login == nil {
@@ -42,6 +41,5 @@ func LoginHandler(authService auth.AuthService) func(ctx *gin.Context) {
 		} else {
 			ctx.JSON(http.StatusOK, login)
 		}
-		//FIXME: ctx .Next()
 	}
 }

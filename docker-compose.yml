@@ -24,3 +24,12 @@ services:
       - ./migrations:/migrations
     entrypoint: []
     command: /wait-for-it.sh postgres-test:5432 -- migrate -path=/migrations/ -database postgres://postgres:postgres@postgres-test:5432/postgres-test?sslmode=disable up
+  golang-code:
+    build: ./
+    restart: always
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./:/app
+    depends_on:
+      - postgres-test

@@ -27,7 +27,7 @@ func AddCommentHandler(productService product.ProductService) func(ctx *gin.Cont
 
 		comment, err := productService.AddComment(product.CommentsDto(addCommentRequest))
 		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{
+			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err,
 			})
 		} else if comment == nil {
@@ -35,7 +35,7 @@ func AddCommentHandler(productService product.ProductService) func(ctx *gin.Cont
 				"error": "can't add comment",
 			})
 		} else {
-			ctx.JSON(http.StatusOK, comment)
+			ctx.JSON(http.StatusCreated, comment)
 		}
 	}
 }

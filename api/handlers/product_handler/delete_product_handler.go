@@ -3,26 +3,27 @@ package product_handler
 import (
 	"net/http"
 	"test/product"
+	"test/user"
 
 	"github.com/gin-gonic/gin"
 )
 
 type DeleteProductRequest struct {
-	ProductId int64 `json:"product_id"`
-	UserId    int64 `json:"user_id"`
+	ProductId int64 `form:"product_id"`
 }
 
 func DeleteProductHandler(productService product.ProductService) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		var deleteProductRequest DeleteProductRequest
-		if err := ctx.BindJSON(&deleteProductRequest); err != nil {
+		if err := ctx.Bind(&deleteProductRequest); err != nil {
 			ctx.JSON(http.StatusBadRequest, err)
 			return
 		}
 
-		err := productService.DeleteProduct(deleteProductRequest.ProductId, deleteProductRequest.UserId)
+		thisUser, _ := ctx.Get("user")
+		err := productService.DeleteProduct(deleteProductRequest.ProductId, thisUser.(*user.User).Id)
 		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{
+			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
 		} else {

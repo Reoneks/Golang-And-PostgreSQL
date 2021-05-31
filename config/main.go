@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/go-chi/jwtauth"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -12,6 +13,7 @@ type Config interface {
 	DBClient() *gorm.DB
 	JWT() *jwtauth.JWTAuth
 	ServerAddress() *url.URL
+	Log() *logrus.Entry
 }
 
 type ConfigImpl struct {
@@ -21,6 +23,7 @@ type ConfigImpl struct {
 	dbClient *gorm.DB
 	jwt      *jwtauth.JWTAuth
 	url      *url.URL
+	log      *logrus.Entry
 }
 
 func NewConfig() Config {

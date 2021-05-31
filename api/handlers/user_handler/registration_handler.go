@@ -14,6 +14,7 @@ type RegistrationRequest struct {
 	LastName  string `json:"last_name"`
 	Email     string `json:"email" validate:"email"`
 	Password  string `json:"password" validate:"min=8,max=32,alphanum"`
+	Status    int64  `json:"status"`
 }
 
 func RegistrationHandler(userService user.UserService) func(ctx *gin.Context) {
@@ -34,15 +35,15 @@ func RegistrationHandler(userService user.UserService) func(ctx *gin.Context) {
 
 		user, err := userService.Registration(user.UserDto(registrationRequest))
 		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{
+			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
 		} else if user == nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "can't find user",
+				"error": "can't register the user",
 			})
 		} else {
-			ctx.JSON(http.StatusOK, user)
+			ctx.JSON(http.StatusCreated, user)
 		}
 	}
 }

@@ -9,13 +9,13 @@ import (
 )
 
 type GetUserByEmailRequest struct {
-	Email string `json:"email" validate:"email"`
+	Email string `form:"email" json:"email" validate:"email"`
 }
 
 func GetUserByEmailHandler(userService user.UserService) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		var getUserByEmailRequest GetUserByEmailRequest
-		if err := ctx.BindJSON(&getUserByEmailRequest); err != nil {
+		if err := ctx.Bind(&getUserByEmailRequest); err != nil {
 			ctx.JSON(http.StatusBadRequest, err)
 			return
 		}
@@ -30,11 +30,11 @@ func GetUserByEmailHandler(userService user.UserService) func(ctx *gin.Context) 
 
 		user, err := userService.GetUserByEmail(getUserByEmailRequest.Email)
 		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{
+			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
 		} else if user == nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
+			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": "can't find users",
 			})
 		} else {

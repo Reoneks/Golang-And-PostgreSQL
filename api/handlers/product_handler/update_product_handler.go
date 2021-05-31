@@ -3,13 +3,13 @@ package product_handler
 import (
 	"net/http"
 	"test/product"
+	"test/user"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UpdateProductRequest struct {
 	ProductInfo product.Product `json:"product_info"`
-	UserId      int64           `json:"user_id"`
 }
 
 func UpdateProductHandler(productService product.ProductService) func(ctx *gin.Context) {
@@ -20,17 +20,18 @@ func UpdateProductHandler(productService product.ProductService) func(ctx *gin.C
 			return
 		}
 
+		thisUser, _ := ctx.Get("user")
 		product, err := productService.UpdateProduct(
 			product.ToProductDto(updateProductRequest.ProductInfo),
-			updateProductRequest.UserId,
+			thisUser.(*user.User).Id,
 		)
 		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{
+			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
 		} else if product == nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "can't find product",
+				"error": "can't update product",
 			})
 		} else {
 			ctx.JSON(http.StatusOK, product)

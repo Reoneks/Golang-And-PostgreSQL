@@ -7,21 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type DeleteUserRequest struct {
-	UserId int64 `json:"user_id"`
-}
-
 func DeleteUserHandler(userService user.UserService) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		var deleteUserRequest DeleteUserRequest
-		if err := ctx.BindJSON(&deleteUserRequest); err != nil {
-			ctx.JSON(http.StatusBadRequest, err)
-			return
-		}
-
-		err := userService.DeleteUser(deleteUserRequest.UserId)
+		thisUser, _ := ctx.Get("user")
+		err := userService.DeleteUser(thisUser.(*user.User).Id)
 		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{
+			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
 		} else {

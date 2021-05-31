@@ -32,6 +32,9 @@ func (r *UserRepositoryImpl) CreateUser(user UserDto) (*UserDto, error) {
 		}
 		user.Id = lastUser.Id + 1
 	}
+	if user.Status == 0 {
+		user.Status = 1
+	}
 	if err := r.db.Create(&user).Error; err != nil {
 		return nil, err
 	}

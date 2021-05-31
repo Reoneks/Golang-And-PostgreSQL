@@ -3,13 +3,13 @@ package product_handler
 import (
 	"net/http"
 	"test/product"
+	"test/user"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AddUsersRequest struct {
 	ProductId  int64   `json:"product_id"`
-	UserId     int64   `json:"user_id"`
 	UsersToAdd []int64 `json:"other_users"`
 }
 
@@ -21,17 +21,18 @@ func AddUsersHandler(productService product.ProductService) func(ctx *gin.Contex
 			return
 		}
 
+		thisUser, _ := ctx.Get("user")
 		err := productService.AddUsers(
 			addUsersRequest.ProductId,
-			addUsersRequest.UserId,
+			thisUser.(*user.User).Id,
 			addUsersRequest.UsersToAdd,
 		)
 		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{
+			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err,
 			})
 		} else {
-			ctx.JSON(http.StatusOK, "Users are successfully added")
+			ctx.JSON(http.StatusCreated, "Users are successfully added")
 		}
 	}
 }

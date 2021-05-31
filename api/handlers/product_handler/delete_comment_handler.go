@@ -8,20 +8,20 @@ import (
 )
 
 type DeleteCommentRequest struct {
-	CommentId int64 `json:"comment_id"`
+	CommentId int64 `form:"comment_id"`
 }
 
 func DeleteCommentHandler(productService product.ProductService) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		var deleteCommentRequest DeleteCommentRequest
-		if err := ctx.BindJSON(&deleteCommentRequest); err != nil {
+		if err := ctx.Bind(&deleteCommentRequest); err != nil {
 			ctx.JSON(http.StatusBadRequest, err)
 			return
 		}
 
 		err := productService.DeleteComment(deleteCommentRequest.CommentId)
 		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{
+			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
 		} else {
