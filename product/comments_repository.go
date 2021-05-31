@@ -19,13 +19,6 @@ type CommentsRepositoryImpl struct {
 func (r *CommentsRepositoryImpl) CreateComment(comment CommentsDto) (*CommentsDto, error) {
 	comment.CreatedAt = time.Now()
 	comment.UpdatedAt = time.Now()
-	if comment.Id == 0 {
-		var lastComment *CommentsDto
-		if err := r.db.Last(&lastComment).Error; err != nil {
-			return nil, err
-		}
-		comment.Id = lastComment.Id + 1
-	}
 	if err := r.db.Create(&comment).Error; err != nil {
 		return nil, err
 	}

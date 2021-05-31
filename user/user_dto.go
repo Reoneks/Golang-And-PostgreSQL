@@ -16,3 +16,7 @@ type UserDto struct {
 	Password  string `gorm:"column:password"`
 	Status    int64  `gorm:"column:status"`
 }
+
+func (UserDto) TableName() string {
+	return "users"
+}

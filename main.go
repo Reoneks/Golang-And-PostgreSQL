@@ -22,6 +22,7 @@ func main() {
 
 	db := config.DBClient()
 	jwt := config.JWT()
+	log := config.Log()
 
 	userRepository := user.NewUserRepository(db)
 	productRepository := product.NewProductRepository(db)
@@ -37,6 +38,8 @@ func main() {
 		authService,
 		userService,
 		productService,
+		jwt,
+		log,
 	)
 
 	log.Printf("HTTP Server listening at: %v", config.ServerAddress().String())

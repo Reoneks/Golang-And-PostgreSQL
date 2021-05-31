@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS public.comments
 (
-    id integer NOT NULL DEFAULT nextval('comments_id_seq'::regclass),
+    id bigint NOT NULL DEFAULT nextval('comments_id_seq'::regclass),
     text text COLLATE pg_catalog."default",
-    product_id integer NOT NULL,
-    created_by integer NOT NULL,
+    product_id bigint NOT NULL,
+    created_by bigint NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     CONSTRAINT comments_pkey PRIMARY KEY (id),

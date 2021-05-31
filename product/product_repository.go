@@ -33,13 +33,6 @@ func (r *ProductRepositoryImpl) GetProduct(id int64) (*ProductDto, []CommentsDto
 func (r *ProductRepositoryImpl) CreateProduct(product ProductDto) (*ProductDto, error) {
 	product.CreatedAt = time.Now()
 	product.UpdatedAt = time.Now()
-	if product.Id == 0 {
-		var lastProduct *ProductDto
-		if err := r.db.Last(&lastProduct).Error; err != nil {
-			return nil, err
-		}
-		product.Id = lastProduct.Id + 1
-	}
 	if err := r.db.Create(&product).Error; err != nil {
 		return nil, err
 	}

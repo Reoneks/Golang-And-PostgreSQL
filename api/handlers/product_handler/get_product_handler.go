@@ -2,32 +2,28 @@ package product_handler
 
 import (
 	"net/http"
+	"strconv"
 	"test/product"
 
 	"github.com/gin-gonic/gin"
 )
 
-type GetProductRequest struct {
-	Id int64 `form:"id"`
-}
-
 func GetProductHandler(productService product.ProductService) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
-		var getProductRequest GetProductRequest
-		if err := ctx.Bind(&getProductRequest); err != nil {
-			ctx.JSON(http.StatusBadRequest, err)
-			return
+		id, err := strconv.Atoi(ctx.Param("productId"))
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
 		}
 
-		product, comments, err := productService.GetProduct(getProductRequest.Id)
+		product, comments, err := productService.GetProduct(int64(id))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
 		} else if product == nil {
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"error": "can't find product",
-			})
+			ctx.JSON(http.StatusNotFound, gin.H{})
 		} else {
 			ctx.JSON(http.StatusOK, gin.H{
 				"product":  product,

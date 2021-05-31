@@ -21,7 +21,3 @@ func ToUserDtos(users []User) (userDtos []UserDto) {
 	}
 	return
 }
-
-func (UserDto) TableName() string {
-	return "users"
-}

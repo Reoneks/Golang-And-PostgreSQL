@@ -21,7 +21,3 @@ func ToProductDtos(products []Product) (productDtos []ProductDto) {
 	}
 	return
 }
-
-func (ProductDto) TableName() string {
-	return "products"
-}

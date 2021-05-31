@@ -25,16 +25,7 @@ func (r *UserRepositoryImpl) GetUser(id int64) (*UserDto, error) {
 }
 
 func (r *UserRepositoryImpl) CreateUser(user UserDto) (*UserDto, error) {
-	if user.Id == 0 {
-		var lastUser *UserDto
-		if err := r.db.Last(&lastUser).Error; err != nil {
-			return nil, err
-		}
-		user.Id = lastUser.Id + 1
-	}
-	if user.Status == 0 {
-		user.Status = 1
-	}
+	user.Status = 1
 	if err := r.db.Create(&user).Error; err != nil {
 		return nil, err
 	}

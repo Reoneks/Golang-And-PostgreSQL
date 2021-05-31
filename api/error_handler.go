@@ -1,7 +1,6 @@
 package api
 
 import (
-	"test/config"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -15,10 +14,8 @@ import (
  *	Meta: "Some message",
  *})
  */
-func ErrorHandlingMiddleware(numberOfFunctions int64) gin.HandlerFunc {
+func ErrorHandlingMiddleware(numberOfFunctions int64, log *logrus.Entry) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		conf := config.NewConfig()
-		log := conf.Log()
 		for i := int64(0); i < numberOfFunctions; i++ {
 			ctx.Next()
 			errorFounded := false

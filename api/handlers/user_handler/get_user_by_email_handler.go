@@ -34,9 +34,7 @@ func GetUserByEmailHandler(userService user.UserService) func(ctx *gin.Context) 
 				"error": err.Error(),
 			})
 		} else if user == nil {
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"error": "can't find users",
-			})
+			ctx.JSON(http.StatusNotFound, gin.H{})
 		} else {
 			ctx.JSON(http.StatusOK, user)
 		}

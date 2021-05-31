@@ -25,9 +25,7 @@ func GetProductsHandler(productService product.ProductService) func(ctx *gin.Con
 				"error": err.Error(),
 			})
 		} else if product == nil {
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"error": "can't find product",
-			})
+			ctx.JSON(http.StatusNotFound, gin.H{})
 		} else {
 			ctx.JSON(http.StatusOK, product)
 		}

@@ -4,12 +4,17 @@ import (
 	"net/http"
 	"test/product"
 	"test/user"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UpdateProductRequest struct {
-	ProductInfo product.Product `json:"product_info"`
+	Id        int64     `json:"id"`
+	Name      string    `json:"name"`
+	CreatedBy int64     `json:"created_by"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func UpdateProductHandler(productService product.ProductService) func(ctx *gin.Context) {
@@ -22,7 +27,7 @@ func UpdateProductHandler(productService product.ProductService) func(ctx *gin.C
 
 		thisUser, _ := ctx.Get("user")
 		product, err := productService.UpdateProduct(
-			product.ToProductDto(updateProductRequest.ProductInfo),
+			product.ProductDto(updateProductRequest),
 			thisUser.(*user.User).Id,
 		)
 		if err != nil {

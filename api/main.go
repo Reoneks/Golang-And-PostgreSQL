@@ -7,13 +7,15 @@ import (
 	"test/api/handlers/auth_handler"
 	"test/api/handlers/product_handler"
 	"test/api/handlers/user_handler"
+	"test/api/middleware"
 	"test/auth"
-	"test/middleware"
 	"test/product"
 	"test/user"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-chi/jwtauth"
+	"github.com/sirupsen/logrus"
 )
 
 type HTTPServer interface {
@@ -25,6 +27,8 @@ type httpServer struct {
 	authService    auth.AuthService
 	userService    user.UserService
 	productService product.ProductService
+	jwt            *jwtauth.JWTAuth
+	log            *logrus.Entry
 }
 
 func NewHTTPServer(
@@ -32,12 +36,16 @@ func NewHTTPServer(
 	authService auth.AuthService,
 	userService user.UserService,
 	productService product.ProductService,
+	jwt *jwtauth.JWTAuth,
+	log *logrus.Entry,
 ) HTTPServer {
 	return &httpServer{
 		url,
 		authService,
 		userService,
 		productService,
+		jwt,
+		log,
 	}
 }
 
@@ -51,24 +59,24 @@ func (s *httpServer) Start() error {
 
 	private := router.Group("/")
 
-	private.Use(middleware.AuthMiddleware(s.userService))
+	private.Use(middleware.AuthMiddleware(s.userService, s.jwt))
 	{
 		//^ User Handlers
-		private.GET("/get/user", user_handler.GetUserHandler(s.userService))
-		private.GET("/get/user/email", user_handler.GetUserByEmailHandler(s.userService))
-		private.GET("/get/users", user_handler.GetUsersHandler(s.userService))
-		private.DELETE("/delete/user", user_handler.DeleteUserHandler(s.userService))
+		private.GET("/user/:userId", user_handler.GetUserHandler(s.userService))
+		private.GET("/user/email", user_handler.GetUserByEmailHandler(s.userService))
+		private.GET("/users", user_handler.GetUsersHandler(s.userService))
+		private.DELETE("/user", user_handler.DeleteUserHandler(s.userService))
 
 		//^ Product Handlers
-		private.GET("/get/product", product_handler.GetProductHandler(s.productService))
-		private.GET("/get/products", product_handler.GetProductsHandler(s.productService))
-		private.POST("/create/product", product_handler.CreateProductHandler(s.productService))
-		private.DELETE("/delete/product", product_handler.DeleteProductHandler(s.productService))
-		private.PUT("/update/product", product_handler.UpdateProductHandler(s.productService))
-		private.POST("/add/users", product_handler.AddUsersHandler(s.productService))
-		private.POST("/add/comment", product_handler.AddCommentHandler(s.productService))
-		private.PUT("/update/comment", product_handler.UpdateCommentHandler(s.productService))
-		private.DELETE("/delete/comment", product_handler.DeleteCommentHandler(s.productService))
+		private.GET("/product/:productId", product_handler.GetProductHandler(s.productService))
+		private.GET("/products", product_handler.GetProductsHandler(s.productService))
+		private.POST("/product", product_handler.CreateProductHandler(s.productService))
+		private.DELETE("/product/:productId", product_handler.DeleteProductHandler(s.productService))
+		private.PUT("/product", product_handler.UpdateProductHandler(s.productService))
+		private.POST("/users", product_handler.AddUsersHandler(s.productService))
+		private.POST("/comment", product_handler.AddCommentHandler(s.productService))
+		private.PUT("/comment", product_handler.UpdateCommentHandler(s.productService))
+		private.DELETE("/comment/:commentId", product_handler.DeleteCommentHandler(s.productService))
 	}
 
 	server := &http.Server{

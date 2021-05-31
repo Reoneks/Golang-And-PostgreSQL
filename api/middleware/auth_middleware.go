@@ -3,14 +3,13 @@ package middleware
 import (
 	"net/http"
 	"strings"
-	"test/config"
 	"test/user"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-chi/jwtauth"
 )
 
-func AuthMiddleware(userService user.UserService) gin.HandlerFunc {
+func AuthMiddleware(userService user.UserService, jwt *jwtauth.JWTAuth) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if len(ctx.Request.Header["Authorization"]) == 0 {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
@@ -26,8 +25,7 @@ func AuthMiddleware(userService user.UserService) gin.HandlerFunc {
 			return
 		}
 		reqToken := strings.Split(ctx.Request.Header["Authorization"][0], " ")[1]
-		jwtNew := config.NewConfig().JWT()
-		token, err := jwtauth.VerifyToken(jwtNew, reqToken)
+		token, err := jwtauth.VerifyToken(jwt, reqToken)
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
 				"error": err.Error(),
@@ -36,8 +34,8 @@ func AuthMiddleware(userService user.UserService) gin.HandlerFunc {
 			return
 		}
 
-		userId, getted := token.Get("user_id")
-		if !getted {
+		userId, ok := token.Get("user_id")
+		if !ok {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
 				"error": "can't get user_id",
 			})
@@ -58,7 +56,7 @@ func AuthMiddleware(userService user.UserService) gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-		if obtainedUser.Status != user.Active && obtainedUser.Status != user.UnActive {
+		if obtainedUser.Status != user.Active {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
 				"error": "can't login",
 			})
