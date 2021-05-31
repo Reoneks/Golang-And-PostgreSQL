@@ -2,12 +2,13 @@ package product
 
 import (
 	"errors"
+	"strconv"
 	"strings"
 )
 
 type ProductService interface {
 	GetProduct(id int64) (*Product, []Comments, error)
-	GetProducts(search string) ([]Product, error)
+	GetProducts(filter ProductFilter) ([]Product, error)
 	CreateProduct(product ProductDto) (*Product, error)
 	DeleteProduct(product_id, userId int64) error
 	UpdateProduct(product ProductDto, userId int64) (*Product, error)
@@ -33,17 +34,15 @@ func (s *ProductServiceImpl) GetProduct(id int64) (*Product, []Comments, error) 
 	return &resultProduct, resultComments, nil
 }
 
-func (s *ProductServiceImpl) GetProducts(search string) ([]Product, error) {
-	params := strings.Split(search, ":")
-	if len(params) == 2 {
-		result, err := s.productRepository.GetProducts(params[0] + " LIKE '%" + params[1] + "%'")
-		if err != nil {
-			return nil, err
-		}
-		resultProducts := FromProductDtos(result)
-		return resultProducts, nil
+func (s *ProductServiceImpl) GetProducts(filter ProductFilter) ([]Product, error) {
+	var search []string
+	if filter.Name != "" {
+		search = append(search, "email LIKE '%"+filter.Name+"%'")
 	}
-	result, err := s.productRepository.GetProducts("")
+	if filter.CreatedBy != 0 {
+		search = append(search, "status = '"+strconv.FormatInt(filter.CreatedBy, 10)+"'")
+	}
+	result, err := s.productRepository.GetProducts(strings.Join(search, " AND "))
 	if err != nil {
 		return nil, err
 	}

@@ -17,6 +17,13 @@ type UserDto struct {
 	Status    int64  `gorm:"column:status"`
 }
 
+type UserFilter struct {
+	FirstName string
+	LastName  string
+	Email     string
+	Status    int64
+}
+
 func (UserDto) TableName() string {
 	return "users"
 }

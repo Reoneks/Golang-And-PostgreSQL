@@ -10,6 +10,11 @@ type ProductDto struct {
 	UpdatedAt time.Time `gorm:"column:updated_at"`
 }
 
+type ProductFilter struct {
+	Name      string
+	CreatedBy int64
+}
+
 func (ProductDto) TableName() string {
 	return "products"
 }

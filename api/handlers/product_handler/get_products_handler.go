@@ -8,7 +8,8 @@ import (
 )
 
 type GetProductsRequest struct {
-	Search string `form:"search"`
+	Name      string `form:"name"`
+	CreatedBy int64  `form:"created_by"`
 }
 
 func GetProductsHandler(productService product.ProductService) func(ctx *gin.Context) {
@@ -19,7 +20,7 @@ func GetProductsHandler(productService product.ProductService) func(ctx *gin.Con
 			return
 		}
 
-		product, err := productService.GetProducts(getProductsRequest.Search)
+		product, err := productService.GetProducts(product.ProductFilter(getProductsRequest))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),

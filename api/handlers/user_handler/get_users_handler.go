@@ -8,7 +8,10 @@ import (
 )
 
 type GetUsersRequest struct {
-	Search string `form:"search"`
+	FirstName string `form:"first_name"`
+	LastName  string `form:"last_name"`
+	Email     string `form:"email"`
+	Status    int64  `form:"status"`
 }
 
 func GetUsersHandler(userService user.UserService) func(ctx *gin.Context) {
@@ -19,7 +22,7 @@ func GetUsersHandler(userService user.UserService) func(ctx *gin.Context) {
 			return
 		}
 
-		user, err := userService.GetUsers(getUsersRequest.Search)
+		user, err := userService.GetUsers(user.UserFilter(getUsersRequest))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),

@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"strconv"
 	"strings"
 	"test/utils"
 )
@@ -10,7 +11,7 @@ type UserService interface {
 	GetUser(userId int64) (*User, error)
 	GetUserByEmail(username string) (*User, error)
 	Registration(user UserDto) (*User, error)
-	GetUsers(search string) ([]User, error)
+	GetUsers(filter UserFilter) ([]User, error)
 	DeleteUser(user int64) error
 }
 
@@ -40,17 +41,21 @@ func (s *UserServiceImpl) Registration(user UserDto) (*User, error) {
 	resultUser := FromUserDto(*result)
 	return &resultUser, nil
 }
-func (s *UserServiceImpl) GetUsers(search string) ([]User, error) {
-	params := strings.Split(search, ":")
-	if len(params) == 2 {
-		result, err := s.userRepository.GetUsers(params[0] + " LIKE '%" + params[1] + "%'")
-		if err != nil {
-			return nil, err
-		}
-		resultUser := FromUserDtos(result)
-		return resultUser, nil
+func (s *UserServiceImpl) GetUsers(filter UserFilter) ([]User, error) {
+	var search []string
+	if filter.Email != "" {
+		search = append(search, "email LIKE '%"+filter.Email+"%'")
 	}
-	result, err := s.userRepository.GetUsers("")
+	if filter.FirstName != "" {
+		search = append(search, "first_name LIKE '%"+filter.FirstName+"%'")
+	}
+	if filter.LastName != "" {
+		search = append(search, "last_name LIKE '%"+filter.LastName+"%'")
+	}
+	if filter.Status != 0 {
+		search = append(search, "status = '"+strconv.FormatInt(filter.Status, 10)+"'")
+	}
+	result, err := s.userRepository.GetUsers(strings.Join(search, " AND "))
 	if err != nil {
 		return nil, err
 	}

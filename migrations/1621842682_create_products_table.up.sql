@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS public.products
 (
-    id bigint NOT NULL DEFAULT nextval('products_id_seq'::regclass),
+    id bigint NOT NULL,
     name name COLLATE pg_catalog."C" NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
