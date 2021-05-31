@@ -27,11 +27,10 @@ func ErrorHandlingMiddleware(numberOfFunctions int64, log *logrus.Entry) gin.Han
 					"message": errInfo,
 				}).WithError(err.Err)
 
-				ctx.JSON(int(err.Type), gin.H{
+				ctx.AbortWithStatusJSON(int(err.Type), gin.H{
 					"Message:": errInfo,
 				})
 				errorFounded = true
-				ctx.Abort()
 			}
 			if errorFounded {
 				return
