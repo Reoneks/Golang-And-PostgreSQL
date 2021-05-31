@@ -5,5 +5,6 @@ CREATE TABLE IF NOT EXISTS public.users
     last_name name COLLATE pg_catalog."default" NOT NULL,
     email text COLLATE pg_catalog."default" NOT NULL,
     password text COLLATE pg_catalog."default" NOT NULL,
+    status integer NOT NULL,
     CONSTRAINT users_pkey PRIMARY KEY (id)
 );
