@@ -1,5 +1,6 @@
 package user
 
+//^ Status codes
 const (
 	Active   = 1
 	UnActive = 2
