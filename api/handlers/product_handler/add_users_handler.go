@@ -32,7 +32,7 @@ func AddUsersHandler(productService product.ProductService) func(ctx *gin.Contex
 				"error": err,
 			})
 		} else {
-			ctx.JSON(http.StatusCreated, "Users are successfully added")
+			ctx.JSON(http.StatusCreated, gin.H{})
 		}
 	}
 }

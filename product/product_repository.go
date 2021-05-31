@@ -1,6 +1,7 @@
 package product
 
 import (
+	"strings"
 	"time"
 
 	gm "gorm.io/gorm"
@@ -11,7 +12,7 @@ type ProductRepository interface {
 	CreateProduct(user ProductDto) (*ProductDto, error)
 	UpdateProduct(user ProductDto) (*ProductDto, error)
 	DeleteProduct(id int64) error
-	GetProducts(where string) ([]ProductDto, error)
+	GetProducts(filter *ProductFilter) ([]ProductDto, error)
 }
 
 type ProductRepositoryImpl struct {
@@ -21,7 +22,7 @@ type ProductRepositoryImpl struct {
 func (r *ProductRepositoryImpl) GetProduct(id int64) (*ProductDto, []CommentsDto, error) {
 	product := &ProductDto{}
 	comments := []CommentsDto{}
-	if err := r.db.Where("id = ?", id).First(product).Error; err != nil {
+	if err := r.db.Joins("User").Where("products.id = ?", id).First(product).Error; err != nil {
 		return nil, nil, err
 	}
 	if err := r.db.Where("product_id = ?", id).Find(&comments).Error; err != nil {
@@ -59,12 +60,16 @@ func (r *ProductRepositoryImpl) DeleteProduct(id int64) error {
 	return nil
 }
 
-func (r *ProductRepositoryImpl) GetProducts(where string) (products []ProductDto, err error) {
+func (r *ProductRepositoryImpl) GetProducts(filter *ProductFilter) (products []ProductDto, err error) {
 	var findResult *gm.DB = r.db
-	if where != "" {
-		findResult = findResult.Where(where)
+	var search []string
+	if filter != nil {
+		if filter.Name != nil {
+			search = append(search, "products.name LIKE '%"+*filter.Name+"%'")
+		}
+		findResult = findResult.Where(strings.Join(search, " AND "))
 	}
-	if err := findResult.Find(&products).Error; err != nil {
+	if err := findResult.Joins("User").Find(&products).Error; err != nil {
 		return nil, err
 	}
 	return

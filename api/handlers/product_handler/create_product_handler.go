@@ -24,15 +24,20 @@ func CreateProductHandler(productService product.ProductService) func(ctx *gin.C
 			return
 		}
 
-		product, err := productService.CreateProduct(product.ProductDto(createProductRequest))
+		productModel := product.Product{
+			Id:        createProductRequest.Id,
+			Name:      createProductRequest.Name,
+			CreatedBy: createProductRequest.CreatedBy,
+			CreatedAt: createProductRequest.CreatedAt,
+			UpdatedAt: createProductRequest.UpdatedAt,
+		}
+		product, err := productService.CreateProduct(productModel)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
 		} else if product == nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "can't create product",
-			})
+			ctx.JSON(http.StatusBadRequest, gin.H{})
 		} else {
 			ctx.JSON(201, product)
 		}

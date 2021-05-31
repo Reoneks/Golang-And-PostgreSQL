@@ -2,16 +2,14 @@ package user
 
 import (
 	"errors"
-	"strconv"
-	"strings"
 	"test/utils"
 )
 
 type UserService interface {
 	GetUser(userId int64) (*User, error)
 	GetUserByEmail(username string) (*User, error)
-	Registration(user UserDto) (*User, error)
-	GetUsers(filter UserFilter) ([]User, error)
+	Registration(user User) (*User, error)
+	GetUsers(filter *UserFilter) ([]User, error)
 	DeleteUser(user int64) error
 }
 
@@ -28,34 +26,22 @@ func (s *UserServiceImpl) GetUser(userId int64) (*User, error) {
 	return &resultUser, nil
 }
 
-func (s *UserServiceImpl) Registration(user UserDto) (*User, error) {
+func (s *UserServiceImpl) Registration(user User) (*User, error) {
 	password, err := utils.Encrypt(user.Password)
 	user.Password = password
 	if err != nil {
 		return nil, err
 	}
-	result, err := s.userRepository.CreateUser(user)
+	user.Status = Active
+	result, err := s.userRepository.CreateUser(ToUserDto(user))
 	if err != nil {
 		return nil, err
 	}
 	resultUser := FromUserDto(*result)
 	return &resultUser, nil
 }
-func (s *UserServiceImpl) GetUsers(filter UserFilter) ([]User, error) {
-	var search []string
-	if filter.Email != "" {
-		search = append(search, "email LIKE '%"+filter.Email+"%'")
-	}
-	if filter.FirstName != "" {
-		search = append(search, "first_name LIKE '%"+filter.FirstName+"%'")
-	}
-	if filter.LastName != "" {
-		search = append(search, "last_name LIKE '%"+filter.LastName+"%'")
-	}
-	if filter.Status != 0 {
-		search = append(search, "status = '"+strconv.FormatInt(filter.Status, 10)+"'")
-	}
-	result, err := s.userRepository.GetUsers(strings.Join(search, " AND "))
+func (s *UserServiceImpl) GetUsers(filter *UserFilter) ([]User, error) {
+	result, err := s.userRepository.GetUsers(filter)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +50,12 @@ func (s *UserServiceImpl) GetUsers(filter UserFilter) ([]User, error) {
 }
 
 func (s *UserServiceImpl) GetUserByEmail(email string) (*User, error) {
-	someUsers, err := s.userRepository.GetUsers("email = '" + email + "'")
+	userStatus := []int64{Active.ToInt64()}
+	filter := &UserFilter{
+		Email:  &email,
+		Status: userStatus,
+	}
+	someUsers, err := s.userRepository.GetUsers(filter)
 	if err != nil {
 		return nil, err
 	} else if len(someUsers) == 0 {

@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS public.users_products
 (
-    user_id bigint NOT NULL,
-    product_id bigint NOT NULL,
+    user_id bigserial NOT NULL,
+    product_id bigserial NOT NULL,
     CONSTRAINT product_key FOREIGN KEY (product_id)
         REFERENCES public.products (id) MATCH SIMPLE
         ON UPDATE CASCADE

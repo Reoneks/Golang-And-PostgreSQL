@@ -7,7 +7,7 @@ import (
 )
 
 type DBConfig struct {
-	DNS string `env:"DNS"`
+	DSN string `env:"DSN"`
 }
 
 func (c *ConfigImpl) DBClient() *gorm.DB {
@@ -23,7 +23,7 @@ func (c *ConfigImpl) DBClient() *gorm.DB {
 		panic(err)
 	}
 
-	client, err := gorm.Open(postgres.Open(dbConfig.DNS), &gorm.Config{})
+	client, err := gorm.Open(postgres.Open(dbConfig.DSN), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}

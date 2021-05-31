@@ -25,9 +25,16 @@ func UpdateProductHandler(productService product.ProductService) func(ctx *gin.C
 			return
 		}
 
+		productModel := product.Product{
+			Id:        updateProductRequest.Id,
+			Name:      updateProductRequest.Name,
+			CreatedBy: updateProductRequest.CreatedBy,
+			CreatedAt: updateProductRequest.CreatedAt,
+			UpdatedAt: updateProductRequest.UpdatedAt,
+		}
 		thisUser, _ := ctx.Get("user")
 		product, err := productService.UpdateProduct(
-			product.ProductDto(updateProductRequest),
+			productModel,
 			thisUser.(*user.User).Id,
 		)
 		if err != nil {
@@ -35,9 +42,7 @@ func UpdateProductHandler(productService product.ProductService) func(ctx *gin.C
 				"error": err.Error(),
 			})
 		} else if product == nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "can't update product",
-			})
+			ctx.JSON(http.StatusBadRequest, gin.H{})
 		} else {
 			ctx.JSON(http.StatusOK, product)
 		}

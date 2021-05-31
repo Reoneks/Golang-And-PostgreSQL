@@ -14,27 +14,22 @@ import (
  *	Meta: "Some message",
  *})
  */
-func ErrorHandlingMiddleware(numberOfFunctions int64, log *logrus.Entry) gin.HandlerFunc {
+func ErrorHandling(log *logrus.Entry) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		for i := int64(0); i < numberOfFunctions; i++ {
-			ctx.Next()
-			errorFounded := false
-			for err := ctx.Errors.Last(); err != nil; err = ctx.Errors.Last() {
-				errInfo := err.Meta.(string)
-
-				log.WithFields(logrus.Fields{
-					"time":    time.Now(),
-					"message": errInfo,
-				}).WithError(err.Err)
-
-				ctx.AbortWithStatusJSON(int(err.Type), gin.H{
-					"Message:": errInfo,
-				})
-				errorFounded = true
-			}
-			if errorFounded {
-				return
-			}
+		ctx.Next()
+		err := ctx.Errors.Last()
+		if err == nil {
+			return
 		}
+		errInfo := err.Meta.(string)
+
+		log.WithFields(logrus.Fields{
+			"time":    time.Now(),
+			"message": errInfo,
+		}).WithError(err.Err)
+
+		ctx.AbortWithStatusJSON(int(err.Type), gin.H{
+			"Message:": errInfo,
+		})
 	}
 }

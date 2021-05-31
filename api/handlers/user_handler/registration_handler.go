@@ -33,7 +33,15 @@ func RegistrationHandler(userService user.UserService) func(ctx *gin.Context) {
 			return
 		}
 
-		user, err := userService.Registration(user.UserDto(registrationRequest))
+		userModel := user.User{
+			Id:        registrationRequest.Id,
+			FirstName: registrationRequest.FirstName,
+			LastName:  registrationRequest.LastName,
+			Email:     registrationRequest.Email,
+			Password:  registrationRequest.Password,
+			Status:    user.NewStatusCode(registrationRequest.Status),
+		}
+		user, err := userService.Registration(userModel)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),

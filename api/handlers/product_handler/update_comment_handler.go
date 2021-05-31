@@ -25,15 +25,13 @@ func UpdateCommentHandler(productService product.ProductService) func(ctx *gin.C
 			return
 		}
 
-		comment, err := productService.UpdateComment(product.CommentsDto(updateCommentRequest))
+		comment, err := productService.UpdateComment(product.Comments(updateCommentRequest))
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err,
 			})
 		} else if comment == nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "can't update comment",
-			})
+			ctx.JSON(http.StatusBadRequest, gin.H{})
 		} else {
 			ctx.JSON(http.StatusOK, comment)
 		}

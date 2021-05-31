@@ -195,7 +195,7 @@ func TestGetProductSuccess(t *testing.T) {
 	}, comments)
 }
 func TestGetProductsSuccess(t *testing.T) {
-	result, err := productServiceSuccess.GetProducts("")
+	result, err := productServiceSuccess.GetProducts(product.ProductFilter{})
 	if err != nil {
 		t.Error(err)
 	}
@@ -293,7 +293,7 @@ func TestGetProductError(t *testing.T) {
 	assert.Equal(t, err.Error(), "Some error")
 }
 func TestGetProductsError(t *testing.T) {
-	_, err := productServiceError.GetProducts("")
+	_, err := productServiceError.GetProducts(product.ProductFilter{})
 	if err == nil {
 		t.Error("Error can`t be nil here")
 	}

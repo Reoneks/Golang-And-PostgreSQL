@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS public.comments
 (
-    id bigint NOT NULL,
+    id bigserial NOT NULL,
     text text COLLATE pg_catalog."default",
-    product_id bigint NOT NULL,
-    created_by bigint NOT NULL,
+    product_id bigserial NOT NULL,
+    created_by bigserial NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     CONSTRAINT comments_pkey PRIMARY KEY (id),
